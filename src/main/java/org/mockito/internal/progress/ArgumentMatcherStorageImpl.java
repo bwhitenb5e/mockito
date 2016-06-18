@@ -6,7 +6,6 @@
 package org.mockito.internal.progress;
 
 import org.mockito.ArgumentMatcher;
-import org.mockito.exceptions.Reporter;
 import org.mockito.internal.matchers.And;
 import org.mockito.internal.matchers.LocalizedMatcher;
 import org.mockito.internal.matchers.Not;

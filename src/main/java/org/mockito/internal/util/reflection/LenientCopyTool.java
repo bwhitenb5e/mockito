@@ -30,9 +30,8 @@ public class LenientCopyTool {
     private <T> void copyValues(T from, T mock, Class classFrom) {
         Field[] fields = classFrom.getDeclaredFields();
 
-        for (int i = 0; i < fields.length; i++) {
+        for (Field field : fields) {
             // ignore static fields
-            Field field = fields[i];
             if (Modifier.isStatic(field.getModifiers())) {
                 continue;
             }

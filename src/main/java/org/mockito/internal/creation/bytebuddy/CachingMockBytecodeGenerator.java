@@ -24,11 +24,8 @@ class CachingMockBytecodeGenerator {
         avoidingClassLeakCacheLock.lock();
         try {
 
-            Class generatedMockClass = mockCachePerClassLoaderOf(params.mockedType).getOrGenerateMockClass(
-                    params
-            );
-
-            return generatedMockClass;
+            return mockCachePerClassLoaderOf(params.mockedType)
+                    .getOrGenerateMockClass(params);
         } finally {
           avoidingClassLeakCacheLock.unlock();
         }
@@ -45,7 +42,7 @@ class CachingMockBytecodeGenerator {
     }
 
     private static class CachedBytecodeGenerator {
-        private ConcurrentHashMap<MockKey, WeakReference<Class>> generatedClassCache =
+        private final ConcurrentHashMap<MockKey, WeakReference<Class>> generatedClassCache =
                 new ConcurrentHashMap<MockKey, WeakReference<Class>>();
         private final MockBytecodeGenerator generator;
 

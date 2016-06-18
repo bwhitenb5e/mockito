@@ -17,7 +17,7 @@ import org.mockito.invocation.Location;
 
 public class AtLeastXNumberOfInvocationsChecker {
     
-    InvocationsFinder finder = new InvocationsFinder();
+    private final InvocationsFinder finder = new InvocationsFinder();
 
     public void check(List<Invocation> invocations, InvocationMatcher wanted, int wantedCount) {
         List<Invocation> actualInvocations = finder.findInvocations(invocations, wanted);

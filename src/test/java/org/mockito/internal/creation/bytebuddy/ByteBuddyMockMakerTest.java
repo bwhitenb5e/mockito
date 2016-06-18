@@ -101,11 +101,10 @@ public class ByteBuddyMockMakerTest {
                 .withCodeSourceUrlOf(coverageTool())
                 .without("org.objenesis")
                 .build();
-        boolean initialize_class = true;
 
         Class<?> mock_maker_class_loaded_fine_until = Class.forName(
                 "org.mockito.internal.creation.bytebuddy.ByteBuddyMockMaker",
-                initialize_class,
+                true,
                 classpath_without_objenesis
         );
 
@@ -155,7 +154,7 @@ public class ByteBuddyMockMakerTest {
         return mockSettings;
     }
 
-    public static MockHandler dummyH() {
+    private static MockHandler dummyH() {
         return new DummyMockHandler();
     }
 

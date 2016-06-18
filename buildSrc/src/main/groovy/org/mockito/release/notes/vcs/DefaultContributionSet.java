@@ -5,10 +5,10 @@ import org.mockito.release.notes.util.Predicate;
 import java.util.*;
 
 class DefaultContributionSet implements ContributionSet {
-    private final Map<String, Contribution> contributions = new HashMap<String, Contribution>();
-    private final Collection<Commit> commits = new LinkedList<Commit>();
+    private final Map<String, Contribution> contributions = new HashMap<>();
+    private final Collection<Commit> commits = new LinkedList<>();
     private final Predicate<Commit> ignoreCommit;
-    private final Set<String> tickets = new LinkedHashSet<String>();
+    private final Set<String> tickets = new LinkedHashSet<>();
 
     public DefaultContributionSet(Predicate<Commit> ignoredCommit) {
         this.ignoreCommit = ignoredCommit;
@@ -49,7 +49,7 @@ class DefaultContributionSet implements ContributionSet {
     }
 
     public static <K, V extends Comparable<V>> List<Map.Entry<K, V>> sortByValue(Map<K, V> map) {
-        List<Map.Entry<K, V>> entries = new ArrayList<Map.Entry<K, V>>(map.entrySet());
+        List<Map.Entry<K, V>> entries = new ArrayList<>(map.entrySet());
         Collections.sort(entries, new ByValue<K, V>());
         return entries;
     }

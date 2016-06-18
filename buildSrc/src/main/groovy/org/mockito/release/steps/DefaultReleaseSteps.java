@@ -8,7 +8,7 @@ import java.util.List;
 
 class DefaultReleaseSteps implements ReleaseSteps {
 
-    private List<ReleaseStep> steps = new ArrayList<ReleaseStep>();
+    private final List<ReleaseStep> steps = new ArrayList<>();
 
     public ConfigurableReleaseStep newStep(String description, Operation operation) {
         DefaultReleaseStep step = new DefaultReleaseStep(description, operation);
@@ -26,7 +26,7 @@ class DefaultReleaseSteps implements ReleaseSteps {
 
   public void perform() {
         System.out.println("Performing " + steps.size() + " release steps");
-        LinkedList<ReleaseStep> attempted = new LinkedList<ReleaseStep>();
+        LinkedList<ReleaseStep> attempted = new LinkedList<>();
         for (ReleaseStep step : steps) {
             attempted.add(step);
             System.out.println("Step " + attempted.size() + ": " + step.getDescription());
@@ -46,7 +46,7 @@ class DefaultReleaseSteps implements ReleaseSteps {
 
     private static void rollback(List<ReleaseStep> attempted) {
         System.out.println("Release failed. Rolling back " + attempted.size() + " release steps.");
-        LinkedList<ReleaseStep> targets = new LinkedList<ReleaseStep>(attempted);
+        LinkedList<ReleaseStep> targets = new LinkedList<>(attempted);
         while(!targets.isEmpty()) {
             ReleaseStep s = targets.removeLast();
             //TODO SF push this message down

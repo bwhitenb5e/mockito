@@ -10,7 +10,6 @@ import static org.mockito.exceptions.Reporter.noMoreInteractionsWantedInOrder;
 
 import java.util.List;
 
-import org.mockito.exceptions.Reporter;
 import org.mockito.internal.invocation.InvocationsFinder;
 import org.mockito.internal.verification.api.VerificationData;
 import org.mockito.internal.verification.api.VerificationDataInOrder;

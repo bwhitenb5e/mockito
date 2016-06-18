@@ -4,7 +4,6 @@
  */
 package org.mockito.internal.handler;
 
-import org.mockito.exceptions.Reporter;
 import org.mockito.internal.InternalMockHandler;
 import org.mockito.internal.invocation.InvocationMatcher;
 import org.mockito.internal.invocation.MatchersBinder;

@@ -50,8 +50,8 @@ class ZipCompare {
 
         int errcount = 0;
         int filecount = 0;
-        for (Iterator i = set1.iterator(); i.hasNext(); ) {
-            String name = (String) i.next();
+        for (Object aSet1 : set1) {
+            String name = (String) aSet1;
             if (!set2.contains(name)) {
                 LOG.info(name + " not found in " + filePath2);
                 errcount += 1;
@@ -70,8 +70,8 @@ class ZipCompare {
             }
             filecount += 1;
         }
-        for (Iterator i = set2.iterator(); i.hasNext(); ) {
-            String name = (String) i.next();
+        for (Object aSet2 : set2) {
+            String name = (String) aSet2;
             LOG.info(name + " not found in " + filePath1);
             errcount += 1;
         }

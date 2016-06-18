@@ -9,7 +9,7 @@ class Contribution implements Comparable<Contribution> {
     //email identifies the contributor, author alias not necessarily
     final String authorId;
     final String author;
-    final List<Commit> commits = new LinkedList<Commit>();
+    final List<Commit> commits = new LinkedList<>();
 
     Contribution(Commit commit) {
         authorId = commit.getAuthorId();

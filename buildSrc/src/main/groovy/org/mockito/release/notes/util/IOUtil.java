@@ -44,12 +44,9 @@ public class IOUtil {
         }
     }
 
-    private static String readNow(InputStream is) throws IOException {
-        java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
-        try {
+    private static String readNow(InputStream is) {
+        try (java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A")) {
             return s.hasNext() ? s.next() : "";
-        } finally {
-            s.close();
         }
     }
 

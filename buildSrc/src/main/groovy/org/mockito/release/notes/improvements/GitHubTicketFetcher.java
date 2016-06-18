@@ -60,12 +60,12 @@ class GitHubTicketFetcher {
     }
 
     private Queue<Long> queuedTicketNumbers(Collection<String> ticketIds) {
-        List<Long> tickets = new ArrayList<Long>();
+        List<Long> tickets = new ArrayList<>();
         for (String id : ticketIds) {
             tickets.add(Long.parseLong(id));
         }
         Collections.sort(tickets);
-        PriorityQueue<Long> longs = new PriorityQueue<Long>(tickets.size(), Collections.reverseOrder());
+        PriorityQueue<Long> longs = new PriorityQueue<>(tickets.size(), Collections.reverseOrder());
         longs.addAll(tickets);
         return longs;
     }
@@ -75,7 +75,7 @@ class GitHubTicketFetcher {
             return Collections.emptyList();
         }
 
-        ArrayList<Improvement> pagedImprovements = new ArrayList<Improvement>();
+        ArrayList<Improvement> pagedImprovements = new ArrayList<>();
         for (JSONObject issue : issues) {
             long id = (Long) issue.get("number");
             if (tickets.remove(id)) {
@@ -179,7 +179,7 @@ class GitHubTicketFetcher {
         }
 
         private static class GitHubIssuesBuilder {
-            private String authToken;
+            private final String authToken;
             private String state;
             private String filter;
             private String direction;

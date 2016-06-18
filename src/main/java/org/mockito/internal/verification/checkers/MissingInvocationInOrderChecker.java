@@ -11,7 +11,6 @@ import static org.mockito.exceptions.Reporter.wantedButNotInvokedInOrder;
 
 import java.util.List;
 
-import org.mockito.exceptions.Reporter;
 import org.mockito.internal.invocation.InvocationMatcher;
 import org.mockito.internal.invocation.InvocationsFinder;
 import org.mockito.internal.reporting.SmartPrinter;

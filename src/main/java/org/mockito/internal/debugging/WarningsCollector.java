@@ -18,7 +18,7 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class WarningsCollector {
    
-    List createdMocks;
+    private final List createdMocks;
 
     public WarningsCollector() {
         createdMocks = new LinkedList();
@@ -31,8 +31,6 @@ public class WarningsCollector {
         List<Invocation> all = new AllInvocationsFinder().find(createdMocks);
         List<InvocationMatcher> allInvocationMatchers = InvocationMatcher.createFrom(all);
 
-        String warnings = new WarningsPrinterImpl(unused, allInvocationMatchers, false).print();
-
-        return warnings;
+        return new WarningsPrinterImpl(unused, allInvocationMatchers, false).print();
     }
 }
