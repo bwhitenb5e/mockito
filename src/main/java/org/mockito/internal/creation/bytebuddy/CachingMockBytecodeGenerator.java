@@ -1,51 +1,56 @@
 package org.mockito.internal.creation.bytebuddy;
 
 import static org.mockito.internal.util.StringJoiner.join;
+
+import java.lang.ref.Reference;
+import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Modifier;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.ConcurrentMap;
+
 import org.mockito.exceptions.base.MockitoException;
 
-class CachingMockBytecodeGenerator {
+class CachingMockBytecodeGenerator extends ReferenceQueue<ClassLoader> {
 
-    private final Lock avoidingClassLeakCacheLock = new ReentrantLock();
-    public final WeakHashMap<ClassLoader, CachedBytecodeGenerator> avoidingClassLeakageCache =
-            new WeakHashMap<ClassLoader, CachedBytecodeGenerator>();
+    private static final ClassLoader BOOT_LOADER = new URLClassLoader(new URL[0], null);
+
+    final ConcurrentMap<Value<ClassLoader>, CachedBytecodeGenerator> avoidingClassLeakageCache =
+            new ConcurrentHashMap<Value<ClassLoader>, CachedBytecodeGenerator>();
 
     private final MockBytecodeGenerator mockBytecodeGenerator = new MockBytecodeGenerator();
 
     @SuppressWarnings("unchecked")
     public <T> Class<T> get(MockFeatures<T> params) {
-        // TODO improves locking behavior with ReentrantReadWriteLock ?
-        avoidingClassLeakCacheLock.lock();
-        try {
+        pollAndClearReferences();
+        return (Class<T>) mockCachePerClassLoaderOf(params.mockedType.getClassLoader()).getOrGenerateMockClass(params);
+    }
 
-            Class<?> generatedMockClass = mockCachePerClassLoaderOf(params.mockedType).getOrGenerateMockClass(
-                    params
-            );
-
-            return (Class<T>) generatedMockClass;
-        } finally {
-          avoidingClassLeakCacheLock.unlock();
+    void pollAndClearReferences() {
+        Reference<?> reference;
+        while ((reference = poll()) != null) {
+            avoidingClassLeakageCache.remove(reference);
         }
     }
 
-    private <T> CachedBytecodeGenerator mockCachePerClassLoaderOf(Class<T> mockedType) {
-        if (!avoidingClassLeakageCache.containsKey(mockedType.getClassLoader())) {
-            avoidingClassLeakageCache.put(
-                    mockedType.getClassLoader(),
-                    new CachedBytecodeGenerator(mockBytecodeGenerator)
-            );
+    private CachedBytecodeGenerator mockCachePerClassLoaderOf(ClassLoader classLoader) {
+        classLoader = classLoader == null ? BOOT_LOADER : classLoader;
+        CachedBytecodeGenerator generator = avoidingClassLeakageCache.get(new Key<ClassLoader>(classLoader)), newGenerator;
+        if (generator == null) {
+            generator = avoidingClassLeakageCache.putIfAbsent(new WeakKey<ClassLoader>(classLoader, this), newGenerator = new CachedBytecodeGenerator(mockBytecodeGenerator));
+            if (generator == null) {
+                generator = newGenerator;
+            }
         }
-        return avoidingClassLeakageCache.get(mockedType.getClassLoader());
+        return generator;
     }
 
     private static class CachedBytecodeGenerator {
+
         private ConcurrentHashMap<MockKey, WeakReference<Class<?>>> generatedClassCache =
                 new ConcurrentHashMap<MockKey, WeakReference<Class<?>>>();
         private final MockBytecodeGenerator generator;
@@ -131,6 +136,62 @@ class CachingMockBytecodeGenerator {
             public static <T> MockKey<T> of(Class<T> mockedType, Set<Class<?>> interfaces) {
                 return new MockKey<T>(mockedType, interfaces);
             }
+        }
+    }
+
+    private interface Value<T> {
+
+        T get();
+    }
+
+    private class Key<T> implements Value<T> {
+
+        private final T value;
+
+        private final int hashCode;
+
+        public Key(T value) {
+            this.value = value;
+            hashCode = System.identityHashCode(value);
+        }
+
+        @Override
+        public T get() {
+            return value;
+        }
+
+        @Override
+        public boolean equals(Object object) {
+            if (this == object) return true;
+            if (!(object instanceof Value)) return false;
+            return value == ((Value<?>) object).get();
+        }
+
+        @Override
+        public int hashCode() {
+            return hashCode;
+        }
+    }
+
+    private class WeakKey<T> extends WeakReference<T> implements Value<T> {
+
+        private final int hashCode;
+
+        public WeakKey(T referent, ReferenceQueue<? super T> q) {
+            super(referent, q);
+            hashCode = System.identityHashCode(referent);
+        }
+
+        @Override
+        public boolean equals(Object object) {
+            if (this == object) return true;
+            if (!(object instanceof Value)) return false;
+            return get() == ((Value<?>) object).get();
+        }
+
+        @Override
+        public int hashCode() {
+            return hashCode;
         }
     }
 }

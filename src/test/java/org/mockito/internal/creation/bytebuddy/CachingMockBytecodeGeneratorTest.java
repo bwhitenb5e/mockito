@@ -45,6 +45,8 @@ public class CachingMockBytecodeGeneratorTest {
         System.gc();
         ensure_gc_happened();
 
+        cachingMockBytecodeGenerator.pollAndClearReferences();
+
         // then
         assertThat(cachingMockBytecodeGenerator.avoidingClassLeakageCache).isEmpty();
     }
